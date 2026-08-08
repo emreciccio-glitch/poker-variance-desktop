@@ -1,0 +1,33 @@
+{
+  "id": "/",
+  "name": "MTT Variance Simulator",
+  "short_name": "MTT Variance",
+  "description": "Simulatore Monte Carlo della varianza nei tornei di poker MTT.",
+  "lang": "it-IT",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#101522",
+  "theme_color": "#101522",
+  "categories": ["finance", "utilities"],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
