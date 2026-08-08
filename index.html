@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="description" content="Monte Carlo variance simulator for poker: MTT, PKO, Mystery Bounty, Cash Game and Spin&Go.">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<title>Poker Variance Simulator</title>
+<style>
+:root{--bg:#0a0a0f;--surface:#111118;--surface2:#1a1a24;--orange:#ff6b1a;--orange-glow:rgba(255,107,26,0.12);--text:#e8e6e3;--text2:#8a8890;--text3:#55545a;--border:#222230;--green:#5fdca0;--red:#e05555;--blue:#6ba3ff;--radius:12px;--ease:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-variant-numeric:tabular-nums;min-height:100vh}
+button,input,select{font:inherit;border:0;outline:0}
+select{appearance:none;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 10px center;padding-right:28px}
+.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+.side{background:var(--surface);border-right:1px solid var(--border);padding:24px 20px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;position:sticky;top:0;height:100vh}
+.side-header{display:flex;justify-content:space-between;align-items:center}
+.brand{color:var(--orange);font-size:1.15rem;font-weight:800}
+.lang-sel{background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text2);padding:5px 28px 5px 10px;font-size:.72rem;cursor:pointer}
+.group{display:grid;gap:12px}
+.group h2{color:var(--orange);font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.field{display:grid;gap:4px}
+.field label{color:var(--text2);font-size:.74rem;font-weight:600}
+.field input{width:100%;min-height:38px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);padding:7px 10px;font-size:.88rem;transition:border-color .2s}
+.field input:focus{border-color:var(--orange)}
+.field-row{display:flex;gap:6px}
+.field-row input{flex:1}
+.run{min-height:44px;border:0;border-radius:8px;background:var(--orange);color:#000;font-weight:800;font-size:.85rem;cursor:pointer;transition:transform .14s var(--ease);box-shadow:0 2px 16px var(--orange-glow)}
+.run:active{transform:scale(.97)}
+.params-section{display:none}
+.params-section.visible{display:grid;gap:12px}
+main{padding:32px 36px;overflow-y:auto}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.top h1{font-size:1.4rem;font-weight:800;color:var(--orange)}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:4px;overflow:hidden}
+.tab{padding:8px 14px;border-radius:6px;font-size:.72rem;font-weight:600;color:var(--text3);cursor:pointer;transition:all .2s var(--ease);display:flex;align-items:center;gap:4px;white-space:nowrap}
+.tab.active{background:var(--orange);color:#000}
+.tab:hover:not(.active){color:var(--text2)}
+.tab .lock{width:10px;height:10px;opacity:.5}
+.tab.active .lock{display:none}
+.eyebrow{color:var(--orange);font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;transition:border-color .2s}
+.metric:hover{border-color:var(--orange)}
+.metric small{display:block;color:var(--text3);font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.metric strong{display:block;font-size:1.6rem;font-weight:800;color:var(--orange)}
+.metric span{display:block;font-size:.68rem;color:var(--text3);margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat small{display:block;color:var(--text3);font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.stat b{display:block;font-size:1.05rem;font-weight:700;color:var(--text);margin-top:4px}
+.stat span{font-size:.62rem;color:var(--text3)}
+.risks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.risk{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+.risk span{display:block;color:var(--text3);font-size:.65rem}
+.risk b{display:block;font-size:1.3rem;font-weight:800;margin-top:4px}
+.risk b.red{color:var(--red)}
+.risk b.gold{color:var(--orange)}
+.risk b.green{color:var(--green)}
+.chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;height:300px;cursor:pointer;transition:border-color .2s;position:relative}
+.chart-wrap:hover{border-color:var(--orange)}
+.chart-wrap svg{width:100%;height:100%;overflow:visible}
+.gridline{stroke:var(--border);stroke-width:1}
+.path{fill:none;stroke-width:1.5;opacity:.35}
+.path.main{stroke-width:2.5;opacity:1;stroke:var(--orange)}
+.zero{stroke:var(--text3);stroke-dasharray:4 4;stroke-width:.5}
+.axis{fill:var(--text3);font-size:10px}
+.chart-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.9);padding:40px;flex-direction:column;justify-content:center;align-items:center}
+.chart-overlay.visible{display:flex}
+.chart-overlay .chart-full{width:100%;max-width:1200px;height:60vh;background:var(--surface);border-radius:var(--radius);padding:24px}
+.chart-overlay .chart-full svg{width:100%;height:100%;overflow:visible}
+.chart-overlay .close-chart{margin-top:20px;padding:12px 28px;border-radius:8px;background:var(--orange);color:#000;font-weight:700;cursor:pointer}
+.results{display:none}
+.results.visible{display:block}
+.paywall{display:none;text-align:center;padding:60px 40px}
+.paywall.visible{display:block}
+.paywall h3{font-size:1.5rem;font-weight:800;color:var(--text);margin-bottom:10px}
+.paywall p{color:var(--text2);font-size:.88rem;max-width:400px;margin:0 auto 24px;line-height:1.5}
+.paywall .price{font-size:2.4rem;font-weight:800;color:var(--orange);text-shadow:0 0 30px var(--orange-glow)}
+.paywall .period{font-size:.8rem;color:var(--text3);margin-left:4px}
+.paywall .btn-buy{display:inline-block;margin-top:24px;padding:14px 36px;border-radius:28px;background:var(--orange);color:#000;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 4px 24px var(--orange-glow)}
+.notice{position:fixed;right:20px;bottom:20px;padding:10px 18px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:.8rem;opacity:0;pointer-events:none;transition:opacity .25s}
+.notice.show{opacity:1}
+@media(max-width:900px){.app{grid-template-columns:1fr}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--border)}.metrics{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.chart-wrap{height:220px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+<div class="side-header"><div class="brand">Poker Variance</div><select id="langSel" class="lang-sel"><option value="en">EN</option><option value="es">ES</option><option value="it">IT</option><option value="pt">PT</option><option value="de">DE</option><option value="fr">FR</option><option value="ru">RU</option></select></div>
+<section class="params-section visible" id="paramsMTT"><div class="group"><h2 data-i="mtt_title">MTT Tournament</h2>
+<div class="field"><label data-i="buyin">Buy-in ($)</label><input id="mtt_buyin" type="number" value="800" min="1"></div>
+<div class="field"><label data-i="rake">Rake ($)</label><input id="mtt_rake" type="number" value="100" min="0"></div>
+<div class="field"><label data-i="players">Players (min 30)</label><input id="mtt_players" type="number" value="200" min="30"></div>
+<div class="field"><label data-i="roi">ROI (%)</label><input id="mtt_roi" type="number" value="15" step=".1"></div>
+<div class="field"><label data-i="itm">ITM (%)</label><input id="mtt_itm" type="number" value="15" min="1" max="50"></div>
+</div></section>
+<section class="params-section" id="paramsPKO"><div class="group"><h2>PKO</h2>
+<div class="field"><label>Buy-in ($)</label><input id="pko_buyin" type="number" value="800" min="1"></div>
+<div class="field"><label>Bounty Alloc (%)</label><input id="pko_bountyAlloc" type="number" value="50" min="10" max="80"></div>
+<div class="field"><label>Rake ($)</label><input id="pko_rake" type="number" value="100" min="0"></div>
+<div class="field"><label>Players (min 30)</label><input id="pko_players" type="number" value="200" min="30"></div>
+<div class="field"><label>Regular ROI (%)</label><input id="pko_roiReg" type="number" value="10" step=".1"></div>
+<div class="field"><label>Bounty ROI (%)</label><input id="pko_roiBounty" type="number" value="20" step=".1"></div>
+<div class="field"><label>Avg KO Rate</label><input id="pko_koRate" type="number" value="1.5" step=".1" min="0"></div>
+<div class="field"><label>ITM (%)</label><input id="pko_itm" type="number" value="15" min="1" max="50"></div>
+</div></section>
+<section class="params-section" id="paramsMystery"><div class="group"><h2>Mystery Bounty</h2>
+<div class="field"><label>Buy-in ($)</label><input id="mys_buyin" type="number" value="1000" min="1"></div>
+<div class="field"><label>Mystery Pool (%)</label><input id="mys_pool" type="number" value="40" min="10" max="70"></div>
+<div class="field"><label>Rake ($)</label><input id="mys_rake" type="number" value="100" min="0"></div>
+<div class="field"><label>Players (min 30)</label><input id="mys_players" type="number" value="300" min="30"></div>
+<div class="field"><label>ROI (%)</label><input id="mys_roi" type="number" value="12" step=".1"></div>
+<div class="field"><label>Activation (% field)</label><input id="mys_activation" type="number" value="15" min="5" max="50"></div>
+<div class="field"><label>KO Rate (mystery)</label><input id="mys_koRate" type="number" value="1.2" step=".1" min="0"></div>
+<div class="field"><label>Min / prob (%)</label><div class="field-row"><input id="mys_b1v" type="number" value="100"><input id="mys_b1p" type="number" value="55"></div></div>
+<div class="field"><label>Med / prob (%)</label><div class="field-row"><input id="mys_b2v" type="number" value="500"><input id="mys_b2p" type="number" value="30"></div></div>
+<div class="field"><label>Large / prob (%)</label><div class="field-row"><input id="mys_b3v" type="number" value="3000"><input id="mys_b3p" type="number" value="12"></div></div>
+<div class="field"><label>Mega / prob (%)</label><div class="field-row"><input id="mys_b4v" type="number" value="50000"><input id="mys_b4p" type="number" value="3"></div></div>
+</div></section>
+<section class="params-section" id="paramsCash"><div class="group"><h2 data-i="cash_title">Cash Game</h2>
+<div class="field"><label>Winrate (BB/100)</label><input id="cash_wr" type="number" value="5" step=".1"></div>
+<div class="field"><label>Std Dev (BB/100)</label><input id="cash_sd" type="number" value="80" min="1"></div>
+<div class="field"><label>Big Blind ($)</label><input id="cash_bb" type="number" value="1" step=".01" min=".01"></div>
+<div class="field"><label>Hands/session</label><input id="cash_hands" type="number" value="500" min="100"></div>
+</div></section>
+<section class="params-section" id="paramsSpin"><div class="group"><h2>Spin & Go</h2>
+<div class="field"><label>Buy-in ($)</label><input id="spin_buyin" type="number" value="5" min="1"></div>
+<div class="field"><label>Rake (%)</label><input id="spin_rake" type="number" value="7" min="0" max="15"></div>
+<div class="field"><label>ChipEV (%)</label><input id="spin_cev" type="number" value="52" step=".1" min="33" max="70"></div>
+<div class="field"><label>2x (%)</label><input id="sp_m1" type="number" value="73" step=".01"></div>
+<div class="field"><label>3x (%)</label><input id="sp_m2" type="number" value="20" step=".01"></div>
+<div class="field"><label>5x (%)</label><input id="sp_m3" type="number" value="5" step=".01"></div>
+<div class="field"><label>10x (%)</label><input id="sp_m4" type="number" value="1.5" step=".01"></div>
+<div class="field"><label>25x (%)</label><input id="sp_m5" type="number" value="0.4" step=".001"></div>
+<div class="field"><label>120x (%)</label><input id="sp_m6" type="number" value="0.09" step=".001"></div>
+<div class="field"><label>12000x (%)</label><input id="sp_m7" type="number" value="0.01" step=".001"></div>
+</div></section>
+<div class="group">
+<h2 data-i="sim_title">Simulation</h2>
+<div class="field"><label id="lblCount" data-i="tournaments">Tournaments</label><input id="simCount" type="number" value="1000" min="10" max="10000"></div>
+<div class="field"><label data-i="simulations">Simulations</label><input id="simRuns" type="number" value="1000" min="100" max="5000"></div>
+<button class="run" id="run" data-i="runBtn">RUN SIMULATION</button>
+</div>
+</aside>
+<main>
+<header class="top"><h1>Poker Variance Simulator</h1>
+<nav class="tabs" id="tabs">
+<div class="tab active" data-mode="mtt">MTT</div>
+<div class="tab" data-mode="pko"><svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>PKO</div>
+<div class="tab" data-mode="mystery"><svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Mystery</div>
+<div class="tab" data-mode="cash"><svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Cash</div>
+<div class="tab" data-mode="spin"><svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Spin</div>
+</nav></header>
+<div class="results visible" id="results">
+<div class="eyebrow" data-i="keyResults">Key Results</div>
+<section class="metrics">
+<div class="metric"><small data-i="expProfit">Expected Profit</small><strong id="profit">--</strong><span id="profitSub"></span></div>
+<div class="metric"><small data-i="probProfit">Prob. Profitable</small><strong id="positive" style="color:var(--green)">--</strong><span id="positiveSub"></span></div>
+<div class="metric"><small data-i="recBankroll">Recommended Bankroll</small><strong id="bankroll">--</strong><span id="bankrollSub"></span></div>
+</section>
+<section class="stats">
+<div class="stat"><small data-i="drawdown">Drawdown P90</small><b id="dd" style="color:var(--red)">--</b><span id="ddSub"></span></div>
+<div class="stat"><small id="lblItm" data-i="itmRate">ITM Rate</small><b id="itmRate">--</b><span id="itmSub"></span></div>
+<div class="stat"><small>Sharpe</small><b id="sharpe">--</b></div>
+<div class="stat"><small data-i="downStreak">Down Streak</small><b id="down">--</b><span id="downSub"></span></div>
+</section>
+<div class="eyebrow" data-i="ror">Risk of Ruin</div>
+<section class="risks">
+<div class="risk"><span id="r20a">20 BI</span><b class="red" id="r20">--</b></div>
+<div class="risk"><span id="r50a">50 BI</span><b class="gold" id="r50">--</b></div>
+<div class="risk"><span id="r100a">100 BI</span><b class="green" id="r100">--</b></div>
+</section>
+<div class="eyebrow" data-i="chartLabel">Bankroll Chart</div>
+<div class="chart-wrap" id="chartWrap"><svg id="chart"></svg></div>
+</div>
+<div class="paywall" id="paywallPro"><h3>MTT Pro</h3><p data-i="proPW">Unlock PKO and Mystery Bounty: progressive bounties, envelope distribution, late stage dynamics.</p><div class="price">$2.29</div><span class="period" data-i="oneTime">one-time</span><br><button class="btn-buy" data-sku="mtt_pro" data-i="unlockPro">Unlock MTT Pro</button></div>
+<div class="paywall" id="paywallCash"><h3>Cash Game</h3><p data-i="cashPW">Winrate, std dev, Gaussian distribution and bankroll management.</p><div class="price">$1.29</div><span class="period" data-i="oneTime">one-time</span><br><button class="btn-buy" data-sku="cash_variance" data-i="unlockCash">Unlock Cash</button></div>
+<div class="paywall" id="paywallSpin"><h3>Spin & Go</h3><p data-i="spinPW">Multiplier distribution, jackpot variance, accelerated risk of ruin.</p><div class="price">$1.29</div><span class="period" data-i="oneTime">one-time</span><br><button class="btn-buy" data-sku="spin_variance" data-i="unlockSpin">Unlock Spin & Go</button></div>
+</main>
+</div>
+<div class="chart-overlay" id="chartOverlay"><div class="chart-full"><svg id="chartFull"></svg></div><button class="close-chart" id="closeChart">Close</button></div>
+<div class="notice" id="notice" data-i="notice">Simulation complete</div>
+<script>
+;(function(){
+var LANG={en:{mtt_title:'MTT Tournament',buyin:'Buy-in ($)',rake:'Rake ($)',players:'Players (min 30)',roi:'ROI (%)',itm:'ITM (%)',cash_title:'Cash Game',sim_title:'Simulation',tournaments:'Tournaments',simulations:'Simulations',runBtn:'RUN SIMULATION',running:'RUNNING...',keyResults:'Key Results',expProfit:'Expected Profit',probProfit:'Prob. Profitable',recBankroll:'Recommended Bankroll',drawdown:'Drawdown P90',itmRate:'ITM Rate',winSess:'Win Rate',downStreak:'Down Streak',ror:'Risk of Ruin',chartLabel:'Bankroll Chart',proPW:'Unlock PKO and Mystery Bounty: progressive bounties, envelope distribution, late stage dynamics.',cashPW:'Winrate, std dev, Gaussian distribution and bankroll management.',spinPW:'Multiplier distribution, jackpot variance, accelerated risk of ruin.',oneTime:'one-time',unlockPro:'Unlock MTT Pro',unlockCash:'Unlock Cash',unlockSpin:'Unlock Spin & Go',notice:'Simulation complete',perTournament:'/tourn.',perSession:'/sess.',overSims:'over {n} sims',buyins:'buy-ins',sessions:'sessions',median:'med',of:'of',events:'events',sess:'sess',alertUnavail:'Purchase not available.',alertAndroid:'Only available in the app.'},es:{mtt_title:'Torneo MTT',buyin:'Buy-in ($)',rake:'Rake ($)',players:'Jugadores (min 30)',roi:'ROI (%)',itm:'ITM (%)',cash_title:'Cash Game',sim_title:'Simulacion',tournaments:'Torneos',simulations:'Simulaciones',runBtn:'SIMULAR',running:'SIMULANDO...',keyResults:'Resultados',expProfit:'Beneficio Esperado',probProfit:'Prob. Positivo',recBankroll:'Bankroll Recomendado',drawdown:'Drawdown P90',itmRate:'Tasa ITM',winSess:'Win Rate',downStreak:'Racha Negativa',ror:'Riesgo de Ruina',chartLabel:'Grafico Bankroll',proPW:'Desbloquea PKO y Mystery Bounty.',cashPW:'Winrate, desviacion estandar, distribucion Gaussiana.',spinPW:'Multiplicadores, varianza jackpot.',oneTime:'pago unico',unlockPro:'Desbloquear Pro',unlockCash:'Desbloquear Cash',unlockSpin:'Desbloquear Spin',notice:'Simulacion completada',perTournament:'/torneo',perSession:'/sesion',overSims:'en {n} sims',buyins:'buy-ins',sessions:'sesiones',median:'med',of:'de',events:'torneos',sess:'ses',alertUnavail:'Compra no disponible.',alertAndroid:'Solo en la app.'},it:{mtt_title:'Torneo MTT',buyin:'Buy-in ($)',rake:'Rake ($)',players:'Giocatori (min 30)',roi:'ROI (%)',itm:'Posti pagati (%)',cash_title:'Cash Game',sim_title:'Simulazione',tournaments:'Tornei',simulations:'Simulazioni',runBtn:'SIMULA',running:'SIMULAZIONE...',keyResults:'Risultati',expProfit:'Profitto Atteso',probProfit:'Prob. Positivo',recBankroll:'Bankroll Consigliato',drawdown:'Drawdown P90',itmRate:'ITM Rate',winSess:'Win Rate',downStreak:'Down Streak',ror:'Rischio di Rovina',chartLabel:'Grafico Bankroll',proPW:'Sblocca PKO e Mystery Bounty.',cashPW:'Winrate, deviazione standard, distribuzione Gaussiana.',spinPW:'Moltiplicatori, varianza jackpot.',oneTime:'una tantum',unlockPro:'Sblocca Pro',unlockCash:'Sblocca Cash',unlockSpin:'Sblocca Spin',notice:'Simulazione completata',perTournament:'/torneo',perSession:'/sessione',overSims:'su {n} sim',buyins:'buy-in',sessions:'sessioni',median:'med',of:'su',events:'tornei',sess:'sess',alertUnavail:'Acquisto non disponibile.',alertAndroid:'Solo nell\'app.'},pt:{mtt_title:'Torneio MTT',buyin:'Buy-in ($)',rake:'Rake ($)',players:'Jogadores (min 30)',roi:'ROI (%)',itm:'ITM (%)',cash_title:'Cash Game',sim_title:'Simulacao',tournaments:'Torneios',simulations:'Simulacoes',runBtn:'SIMULAR',running:'SIMULANDO...',keyResults:'Resultados',expProfit:'Lucro Esperado',probProfit:'Prob. Positivo',recBankroll:'Bankroll Recomendado',drawdown:'Drawdown P90',itmRate:'Taxa ITM',winSess:'Win Rate',downStreak:'Sequencia Negativa',ror:'Risco de Ruina',chartLabel:'Grafico Bankroll',proPW:'Desbloqueie PKO e Mystery Bounty.',cashPW:'Winrate, desvio padrao, distribuicao Gaussiana.',spinPW:'Multiplicadores, variancia de jackpot.',oneTime:'pagamento unico',unlockPro:'Desbloquear Pro',unlockCash:'Desbloquear Cash',unlockSpin:'Desbloquear Spin',notice:'Simulacao completa',perTournament:'/torneio',perSession:'/sessao',overSims:'em {n} sims',buyins:'buy-ins',sessions:'sessoes',median:'med',of:'de',events:'torneios',sess:'sess',alertUnavail:'Compra indisponivel.',alertAndroid:'Apenas no app.'},de:{mtt_title:'MTT Turnier',buyin:'Buy-in ($)',rake:'Rake ($)',players:'Spieler (min 30)',roi:'ROI (%)',itm:'ITM (%)',cash_title:'Cash Game',sim_title:'Simulation',tournaments:'Turniere',simulations:'Simulationen',runBtn:'STARTEN',running:'LAUFT...',keyResults:'Ergebnisse',expProfit:'Erwarteter Gewinn',probProfit:'Gewinnwahrsch.',recBankroll:'Empfohlene Bankroll',drawdown:'Drawdown P90',itmRate:'ITM Rate',winSess:'Win Rate',downStreak:'Verlust-Serie',ror:'Ruin-Risiko',chartLabel:'Bankroll Verlauf',proPW:'PKO und Mystery Bounty freischalten.',cashPW:'Winrate, Standardabweichung, Gauss-Verteilung.',spinPW:'Multiplikator-Verteilung, Jackpot-Varianz.',oneTime:'einmalig',unlockPro:'Pro freischalten',unlockCash:'Cash freischalten',unlockSpin:'Spin freischalten',notice:'Simulation fertig',perTournament:'/Turnier',perSession:'/Sitzung',overSims:'uber {n} Sims',buyins:'Buy-ins',sessions:'Sitzungen',median:'Med',of:'von',events:'Turniere',sess:'Sitz',alertUnavail:'Kauf nicht verfugbar.',alertAndroid:'Nur in der App.'},fr:{mtt_title:'Tournoi MTT',buyin:'Buy-in ($)',rake:'Rake ($)',players:'Joueurs (min 30)',roi:'ROI (%)',itm:'ITM (%)',cash_title:'Cash Game',sim_title:'Simulation',tournaments:'Tournois',simulations:'Simulations',runBtn:'LANCER',running:'EN COURS...',keyResults:'Resultats',expProfit:'Profit Attendu',probProfit:'Prob. Positif',recBankroll:'Bankroll Recommandee',drawdown:'Drawdown P90',itmRate:'Taux ITM',winSess:'Win Rate',downStreak:'Serie Negative',ror:'Risque de Ruine',chartLabel:'Graphique Bankroll',proPW:'Debloquez PKO et Mystery Bounty.',cashPW:'Winrate, ecart type, distribution Gaussienne.',spinPW:'Multiplicateurs, variance jackpot.',oneTime:'unique',unlockPro:'Debloquer Pro',unlockCash:'Debloquer Cash',unlockSpin:'Debloquer Spin',notice:'Simulation terminee',perTournament:'/tournoi',perSession:'/session',overSims:'sur {n} sims',buyins:'buy-ins',sessions:'sessions',median:'med',of:'sur',events:'tournois',sess:'sess',alertUnavail:'Achat indisponible.',alertAndroid:'Uniquement dans l\'app.'},ru:{mtt_title:'\u0422\u0443\u0440\u043d\u0438\u0440 MTT',buyin:'\u0411\u0430\u0439-\u0438\u043d ($)',rake:'\u0420\u0435\u0439\u043a ($)',players:'\u0418\u0433\u0440\u043e\u043a\u0438 (\u043c\u0438\u043d 30)',roi:'ROI (%)',itm:'ITM (%)',cash_title:'\u041a\u044d\u0448',sim_title:'\u0421\u0438\u043c\u0443\u043b\u044f\u0446\u0438\u044f',tournaments:'\u0422\u0443\u0440\u043d\u0438\u0440\u044b',simulations:'\u0421\u0438\u043c\u0443\u043b\u044f\u0446\u0438\u0438',runBtn:'\u0417\u0410\u041f\u0423\u0421\u041a',running:'\u0420\u0410\u0421\u0427\u0415\u0422...',keyResults:'\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u044b',expProfit:'\u041f\u0440\u0438\u0431\u044b\u043b\u044c',probProfit:'\u0412\u0435\u0440. \u043f\u0440\u0438\u0431\u044b\u043b\u0438',recBankroll:'\u0411\u0430\u043d\u043a\u0440\u043e\u043b\u043b',drawdown:'\u041f\u0440\u043e\u0441\u0430\u0434\u043a\u0430 P90',itmRate:'ITM',winSess:'Win Rate',downStreak:'\u0421\u0435\u0440\u0438\u044f \u043f\u0440\u043e\u0438\u0433\u0440.',ror:'\u0420\u0438\u0441\u043a \u0440\u0430\u0437\u043e\u0440\u0435\u043d\u0438\u044f',chartLabel:'\u0413\u0440\u0430\u0444\u0438\u043a',proPW:'\u0420\u0430\u0437\u0431\u043b\u043e\u043a\u0438\u0440\u0443\u0439\u0442\u0435 PKO \u0438 Mystery Bounty.',cashPW:'\u0412\u0438\u043d\u0440\u0435\u0439\u0442, \u0441\u0442. \u043e\u0442\u043a\u043b., \u0440\u0430\u0441\u043f\u0440\u0435\u0434. \u0413\u0430\u0443\u0441\u0441\u0430.',spinPW:'\u041c\u043d\u043e\u0436\u0438\u0442\u0435\u043b\u0438, \u0434\u0438\u0441\u043f\u0435\u0440\u0441\u0438\u044f \u0434\u0436\u0435\u043a\u043f\u043e\u0442\u0430.',oneTime:'\u0440\u0430\u0437\u043e\u0432\u043e',unlockPro:'\u0420\u0430\u0437\u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u0430\u0442\u044c',unlockCash:'\u0420\u0430\u0437\u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u0430\u0442\u044c',unlockSpin:'\u0420\u0430\u0437\u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u0430\u0442\u044c',notice:'\u0413\u043e\u0442\u043e\u0432\u043e',perTournament:'/\u0442\u0443\u0440\u043d.',perSession:'/\u0441\u0435\u0441\u0441.',overSims:'\u0438\u0437 {n}',buyins:'\u0431\u0430\u0439-\u0438\u043d\u043e\u0432',sessions:'\u0441\u0435\u0441\u0441\u0438\u0439',median:'\u043c\u0435\u0434',of:'\u0438\u0437',events:'\u0442\u0443\u0440\u043d.',sess:'\u0441\u0435\u0441\u0441',alertUnavail:'\u041d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u043e.',alertAndroid:'\u0422\u043e\u043b\u044c\u043a\u043e \u0432 \u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u0438.'}};
+var curLang=localStorage.getItem('pvs_lang')||'en';
+function t(k){return(LANG[curLang]&&LANG[curLang][k])||LANG.en[k]||k}
+function applyLang(){document.querySelectorAll('[data-i]').forEach(function(el){var k=el.getAttribute('data-i'),txt=t(k);if(el.tagName==='BUTTON')el.textContent=txt;else el.textContent=txt});document.getElementById('langSel').value=curLang}
+document.getElementById('langSel').addEventListener('change',function(){curLang=this.value;localStorage.setItem('pvs_lang',curLang);applyLang()});
+var G=function(id){return document.getElementById(id)},dollar=function(n){return'$'+Math.round(n).toLocaleString('en-US')},short=function(n){return'$'+(Math.abs(n)>=1e3?(n/1e3).toFixed(1)+'K':Math.round(n))};
+function pct(a,p){var b=[...a].sort(function(x,y){return x-y});return b[Math.min(b.length-1,Math.floor(b.length*p))]}
+function randn(){var u=Math.random(),v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function poisson(lam){var L=Math.exp(-lam),k=0,p=1;do{k++;p*=Math.random()}while(p>L);return k-1}
+function genPayouts(pl,ip){var n=Math.max(1,Math.round(pl*ip/100)),a=[],s=0;for(var i=0;i<n;i++){var w=Math.pow(n/(i+1),1.6);a.push(w);s+=w}return a.map(function(x){return x/s})}
+function avgPay(pay,pool){var N=2000,s=0;for(var i=0;i<N;i++){var p=Math.min(pay.length-1,Math.floor(Math.pow((i+.5)/N,.6)*pay.length));s+=pay[p]*pool}return s/N}
+function simMTT(){var buyin=+G('mtt_buyin').value,rake=+G('mtt_rake').value,players=Math.max(30,+G('mtt_players').value),roi=+G('mtt_roi').value,itmPct=+G('mtt_itm').value,T=+G('simCount').value,S=+G('simRuns').value;var cost=buyin+rake,pay=genPayouts(players,itmPct),pool=buyin*players,ap=avgPay(pay,pool),itmP=Math.min(.99,Math.max(.01,(cost*(1+roi/100))/ap));return runSims(S,T,function(){var pr=-cost;if(Math.random()<itmP){var pos=Math.min(pay.length-1,Math.floor(Math.pow(Math.random(),.6)*pay.length));pr+=pay[pos]*pool}return pr},cost)}
+function simPKO(){var buyin=+G('pko_buyin').value,rake=+G('pko_rake').value,players=Math.max(30,+G('pko_players').value),ba=+G('pko_bountyAlloc').value/100,roiR=+G('pko_roiReg').value,koRate=+G('pko_koRate').value,itmPct=+G('pko_itm').value,T=+G('simCount').value,S=+G('simRuns').value;var cost=buyin+rake,regPool=buyin*players*(1-ba),startB=buyin*ba,pay=genPayouts(players,itmPct),apR=avgPay(pay,regPool),targetR=cost*(1+roiR/100)*(1-ba),itmP=Math.min(.99,Math.max(.01,targetR/apR));return runSims(S,T,function(){var pr=-cost;if(Math.random()<itmP){var pos=Math.min(pay.length-1,Math.floor(Math.pow(Math.random(),.6)*pay.length));pr+=pay[pos]*regPool}var nko=poisson(koRate);for(var k=0;k<nko;k++){var stage=Math.pow(Math.random(),1.8);var bv=startB*Math.pow(2,stage*Math.log2(Math.max(2,players/2)));pr+=bv*0.5}return pr},cost)}
+function simMystery(){var buyin=+G('mys_buyin').value,rake=+G('mys_rake').value,players=Math.max(30,+G('mys_players').value),mp=+G('mys_pool').value/100,roi=+G('mys_roi').value,act=+G('mys_activation').value/100,koR=+G('mys_koRate').value,T=+G('simCount').value,S=+G('simRuns').value;var env=[{v:+G('mys_b1v').value,p:+G('mys_b1p').value/100},{v:+G('mys_b2v').value,p:+G('mys_b2p').value/100},{v:+G('mys_b3v').value,p:+G('mys_b3p').value/100},{v:+G('mys_b4v').value,p:+G('mys_b4p').value/100}];var cost=buyin+rake,regPool=buyin*players*(1-mp),pay=genPayouts(players,act*100),reachP=Math.min(.95,act*(1+roi/200));function drawEnv(){var r=Math.random(),c=0;for(var i=0;i<env.length;i++){c+=env[i].p;if(r<c)return env[i].v}return env[env.length-1].v}return runSims(S,T,function(){var pr=-cost;if(Math.random()<reachP){var pos=Math.min(pay.length-1,Math.floor(Math.pow(Math.random(),.6)*pay.length));pr+=pay[pos]*regPool;var nko=poisson(koR);for(var k=0;k<nko;k++)pr+=drawEnv()}return pr},cost)}
+function simCash(){var wr=+G('cash_wr').value,sd=+G('cash_sd').value,bb=+G('cash_bb').value,hps=+G('cash_hands').value,T=+G('simCount').value,S=+G('simRuns').value;var blocks=hps/100,cost=sd*bb*Math.sqrt(blocks)*2;var r=runSims(S,T,function(){var sp=0;for(var b=0;b<blocks;b++)sp+=(wr+randn()*sd)*bb;return sp},cost);r.isCash=true;return r}
+function simSpin(){var buyin=+G('spin_buyin').value,rakePct=+G('spin_rake').value,cev=+G('spin_cev').value/100,T=+G('simCount').value,S=+G('simRuns').value;var multis=[{m:2,p:+G('sp_m1').value/100},{m:3,p:+G('sp_m2').value/100},{m:5,p:+G('sp_m3').value/100},{m:10,p:+G('sp_m4').value/100},{m:25,p:+G('sp_m5').value/100},{m:120,p:+G('sp_m6').value/100},{m:12000,p:+G('sp_m7').value/100}];var cost=buyin*(1+rakePct/100);function drawM(){var r=Math.random(),c=0;for(var i=0;i<multis.length;i++){c+=multis[i].p;if(r<c)return multis[i].m}return multis[0].m}return runSims(S,T,function(){var pr=-cost,multi=drawM(),pool=buyin*3*multi/(1+rakePct/100);if(multi<10){if(Math.random()<cev)pr+=pool}else{var p1=cev*cev*1.1,p3=(1-cev)*(1-cev)*.9,p2=1-p1-p3,str=multi>=120?[.75,.15,.10]:[.80,.12,.08],r2=Math.random();if(r2<p1)pr+=pool*str[0];else if(r2<p1+p2)pr+=pool*str[1];else pr+=pool*str[2]}return pr},cost)}
+function runSims(S,T,fn,uc){var allP=[],allDD=[],allLS=[],allI=[],r20=0,r50=0,r100=0,paths=[];for(var s=0;s<S;s++){var br=0,pk=0,dd=0,ls=0,mls=0,itm=0,h20=0,h50=0,h100=0,path=s<12?[0]:null,step=Math.max(1,Math.floor(T/150));for(var tt=0;tt<T;tt++){var pr=fn();br+=pr;if(pr>0)itm++;if(pr<0){ls++;mls=Math.max(mls,ls)}else ls=0;pk=Math.max(pk,br);dd=Math.max(dd,pk-br);if(!h20&&br<-20*uc)h20=1;if(!h50&&br<-50*uc)h50=1;if(!h100&&br<-100*uc)h100=1;if(path&&tt%step===0)path.push(br)}if(path){path.push(br);paths.push(path)}allP.push(br);allDD.push(dd);allLS.push(mls);allI.push(itm);r20+=h20;r50+=h50;r100+=h100}var mean=allP.reduce(function(a,b){return a+b},0)/S,sd2=Math.sqrt(allP.reduce(function(a,b){return a+(b-mean)*(b-mean)},0)/S);return{mean:mean,perUnit:mean/T,positive:allP.filter(function(x){return x>0}).length/S,dd90:pct(allDD,.9),dd50:pct(allDD,.5),itm:allI.reduce(function(a,b){return a+b},0)/S/T,sharpe:sd2?mean/sd2:0,down:pct(allLS,.5),down95:pct(allLS,.95),ror20:r20/S,ror50:r50/S,ror100:r100/S,rec:Math.max(20,Math.ceil(pct(allDD,.9)/uc)+5),paths:paths,unitCost:uc,T:T,S:S}}
+var lastPaths=[];
+function drawChart(paths,target){var el=typeof target==='string'?G(target):target;var w=900,h=260,pad=32,all=paths.flat(),mn=Math.min(0,...all),mx=Math.max(0,...all),range=mx-mn||1,L=Math.max(...paths.map(function(x){return x.length}));var X=function(i){return pad+i/(L-1)*(w-2*pad)},Y=function(v){return pad+(mx-v)/range*(h-2*pad)};var s='<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">';for(var i=0;i<5;i++){var y=pad+i*(h-2*pad)/4,val=mx-i*range/4;s+='<line class="gridline" x1="'+pad+'" y1="'+y+'" x2="'+(w-pad)+'" y2="'+y+'"/><text class="axis" x="2" y="'+(y+3)+'">'+short(val)+'</text>'}if(mn<0&&mx>0)s+='<line class="zero" x1="'+pad+'" y1="'+Y(0)+'" x2="'+(w-pad)+'" y2="'+Y(0)+'"/>';paths.forEach(function(a,j){var d=a.map(function(v,i){return(i?'L':'M')+X(i)+' '+Y(v)}).join(' ');s+='<path class="path '+(j===0?'main':'')+'" style="stroke:'+(j===0?'var(--orange)':'rgba(255,107,26,0.2)')+'" d="'+d+'"/>'});el.innerHTML=s+'</svg>'}
+function updateUI(r){G('profit').textContent=dollar(r.mean);G('profitSub').textContent=dollar(r.perUnit)+(r.isCash?t('perSession'):t('perTournament'));G('positive').textContent=(r.positive*100).toFixed(1)+'%';G('positiveSub').textContent=t('overSims').replace('{n}',r.S);G('bankroll').textContent=short(r.rec*r.unitCost);G('bankrollSub').textContent=r.rec+' '+(r.isCash?t('sessions'):t('buyins'));G('dd').textContent=short(r.dd90);G('ddSub').textContent=t('median')+' '+short(r.dd50);G('itmRate').textContent=(r.itm*100).toFixed(1)+'%';G('itmSub').textContent=Math.round(r.itm*r.T)+' '+t('of')+' '+r.T;G('sharpe').textContent=r.sharpe.toFixed(3);G('down').textContent=r.down+' '+(r.isCash?t('sess'):t('events'));G('downSub').textContent='P95 '+r.down95;[['20',r.ror20],['50',r.ror50],['100',r.ror100]].forEach(function(e){G('r'+e[0]).textContent=(e[1]*100).toFixed(1)+'%';G('r'+e[0]+'a').textContent=e[0]+' '+(r.isCash?t('sess'):t('buyins'))});if(r.paths.length){lastPaths=r.paths;drawChart(r.paths,'chart')}G('lblItm').textContent=r.isCash?t('winSess'):t('itmRate')}
+G('chartWrap').addEventListener('click',function(){if(lastPaths.length){G('chartOverlay').classList.add('visible');drawChart(lastPaths,'chartFull')}});
+G('closeChart').addEventListener('click',function(){G('chartOverlay').classList.remove('visible')});
+var unlocks={pro:localStorage.getItem('mtt_pro')==='true',cash:localStorage.getItem('cash_variance')==='true',spin:localStorage.getItem('spin_variance')==='true'};
+var currentMode='mtt',paramMap={mtt:'paramsMTT',pko:'paramsPKO',mystery:'paramsMystery',cash:'paramsCash',spin:'paramsSpin'};
+function isUnlocked(m){if(m==='mtt')return true;if(m==='pko'||m==='mystery')return unlocks.pro;if(m==='cash')return unlocks.cash;if(m==='spin')return unlocks.spin;return false}
+function getPW(m){if(m==='pko'||m==='mystery')return'paywallPro';if(m==='cash')return'paywallCash';if(m==='spin')return'paywallSpin';return null}
+function switchMode(m){currentMode=m;document.querySelectorAll('.tab').forEach(function(tab){tab.classList.toggle('active',tab.dataset.mode===m)});document.querySelectorAll('.params-section').forEach(function(s){s.classList.remove('visible')});document.querySelectorAll('.paywall').forEach(function(p){p.classList.remove('visible')});var res=G('results');if(isUnlocked(m)){res.classList.add('visible');G(paramMap[m]).classList.add('visible');G('lblCount').textContent=m==='cash'?t('sessions'):t('tournaments');runCurrent()}else{res.classList.remove('visible');var pw=getPW(m);if(pw)G(pw).classList.add('visible')}}
+if(unlocks.pro)document.querySelectorAll('[data-mode="pko"] .lock,[data-mode="mystery"] .lock').forEach(function(e){e.remove()});
+if(unlocks.cash)document.querySelectorAll('[data-mode="cash"] .lock').forEach(function(e){e.remove()});
+if(unlocks.spin)document.querySelectorAll('[data-mode="spin"] .lock').forEach(function(e){e.remove()});
+document.querySelectorAll('.tab').forEach(function(tab){tab.addEventListener('click',function(){switchMode(tab.dataset.mode)})});
+document.querySelectorAll('.btn-buy').forEach(function(btn){btn.addEventListener('click',function(){var sku=btn.dataset.sku;if(window.getDigitalGoodsService){window.getDigitalGoodsService('https://play.google.com/billing').then(function(svc){return svc.getDetails([sku])}).then(function(d){if(d.length)return new PaymentRequest([{supportedMethods:'https://play.google.com/billing',data:{sku:d[0].itemId}}]).show()}).then(function(resp){if(resp){localStorage.setItem(sku,'true');resp.complete('success');location.reload()}}).catch(function(){alert(t('alertUnavail'))})}else{alert(t('alertAndroid'))}})});
+function runCurrent(){var b=G('run');b.textContent=t('running');b.style.opacity='.6';setTimeout(function(){var r;switch(currentMode){case'mtt':r=simMTT();break;case'pko':r=simPKO();break;case'mystery':r=simMystery();break;case'cash':r=simCash();break;case'spin':r=simSpin();break;default:r=simMTT()}updateUI(r);b.textContent=t('runBtn');b.style.opacity='1';G('notice').classList.add('show');setTimeout(function(){G('notice').classList.remove('show')},1200)},40)}
+G('run').addEventListener('click',runCurrent);
+applyLang();runCurrent();
+if('serviceWorker'in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('./service-worker.js')});
+})();
+</script>
+</body></html>
