@@ -1,16 +1,19 @@
 {
   "id": "/",
-  "name": "MTT Variance Simulator",
-  "short_name": "MTT Variance",
-  "description": "Simulatore Monte Carlo della varianza nei tornei di poker MTT.",
-  "lang": "it-IT",
+  "name": "Poker Variance Simulator",
+  "short_name": "Poker Variance",
+  "description": "Monte Carlo variance simulator for poker: MTT, PKO, Mystery Bounty, Cash Game and Spin & Go. All calculations run locally on your device.",
+  "lang": "en",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#101522",
-  "theme_color": "#101522",
-  "categories": ["finance", "utilities"],
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "categories": [
+    "utilities",
+    "education"
+  ],
   "icons": [
     {
       "src": "./icon-192.png",
