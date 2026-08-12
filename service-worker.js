@@ -1,4 +1,4 @@
-const CACHE = 'poker-variance-v2';
+const CACHE = 'poker-variance-v3';
 const APP = ['./', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png', './privacy-policy.html'];
 
 self.addEventListener('install', event => {

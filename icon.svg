@@ -1,7 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#101522"/>
-  <circle cx="256" cy="256" r="174" fill="#171f31" stroke="#e2b73f" stroke-width="12"/>
-  <path d="M139 329V219l58 72 59-143 61 143 57-72v110" fill="none" stroke="#e2b73f" stroke-width="25" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="139" cy="329" r="16" fill="#5fdca0"/>
-  <circle cx="374" cy="329" r="16" fill="#5fdca0"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Poker Variance Simulator">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff8a3d"/>
+      <stop offset="1" stop-color="#ff5a05"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0a0a0f"/>
+  <rect x="8" y="8" width="496" height="496" rx="106" fill="none" stroke="#1c1c26" stroke-width="6"/>
+  <line x1="96" y1="300" x2="416" y2="300" stroke="#2a2a38" stroke-width="6" stroke-dasharray="18 16" stroke-linecap="round"/>
+  <path d="M96 330 L150 296 L196 356 L246 232 L300 288 L352 168 L416 196" fill="none" stroke="#3a2a22" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>
+  <path d="M96 352 L150 372 L196 318 L246 392 L300 330 L352 372 L416 300" fill="none" stroke="#4a3226" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>
+  <path d="M96 336 L150 268 L196 322 L246 178 L300 240 L352 132 L416 152" fill="none" stroke="url(#g)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="416" cy="152" r="26" fill="#ff6b1a"/>
+  <circle cx="416" cy="152" r="44" fill="none" stroke="#ff6b1a" stroke-width="8" opacity=".35"/>
 </svg>

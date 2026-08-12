@@ -1,52 +1,81 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0a0f">
 <title>Privacy Policy - Poker Variance Simulator</title>
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
 <style>
-body{font-family:system-ui,sans-serif;max-width:680px;margin:40px auto;padding:0 20px;line-height:1.7;color:#222;background:#fafafa}
-h1{font-size:1.6rem;margin-bottom:8px}
-h2{font-size:1.1rem;margin-top:32px}
-p{margin:12px 0}
-ul{margin:8px 0;padding-left:20px}
-.date{color:#666;font-size:.85rem}
+:root{--bg:#0a0a0f;--surface:#111118;--orange:#ff6b1a;--text:#e8e6e3;--text2:#8a8890;--text3:#55545a;--border:#222230}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:40px 20px}
+.wrap{max-width:760px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px}
+h1{color:var(--orange);font-size:1.5rem;font-weight:800}
+h2{color:var(--orange);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:26px 0 8px}
+p,li{color:var(--text2);font-size:.9rem}
+ul{margin:6px 0 0 20px}
+a{color:var(--orange)}
+.meta{color:var(--text3);font-size:.75rem}
+.back{display:inline-block;padding:9px 16px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text2);font-size:.75rem;font-weight:600;text-decoration:none;white-space:nowrap}
+.back:hover{border-color:var(--orange);color:var(--orange)}
+.lang{display:flex;gap:8px;margin-bottom:24px}
+.lang a{font-size:.72rem;font-weight:700;text-decoration:none;color:var(--text3);border:1px solid var(--border);border-radius:6px;padding:5px 12px}
+.lang a:hover{color:var(--orange);border-color:var(--orange)}
+section{border-top:1px solid var(--border);padding-top:24px;margin-top:36px}
+section:first-of-type{border-top:0;margin-top:0;padding-top:0}
 </style>
 </head>
 <body>
-<h1>Privacy Policy</h1>
-<p class="date">Ultimo aggiornamento: 7 agosto 2026</p>
+<div class="wrap">
+<div class="top"><h1>Privacy Policy</h1><a class="back" href="./index.html">&larr; Back to app</a></div>
+<div class="lang"><a href="#en">EN</a><a href="#it">IT</a></div>
 
-<p>Poker Variance Simulator ("l'App") e' sviluppata e gestita da Francesco Rizzo ("noi", "nostro"). Questa privacy policy descrive come trattiamo le informazioni degli utenti.</p>
+<section id="en">
+<p class="meta">Last updated: 12 August 2026</p>
+<p>Poker Variance Simulator ("the App") is developed and operated by Francesco Rizzo ("we", "our"). This policy explains how the App handles user information.</p>
+<h2>Data we collect</h2>
+<p>None. The App does not collect, transmit or store any personal data. Every calculation runs locally on your device. There is no backend server, no user account, no analytics, no cookies and no third-party trackers. The App makes no network requests other than loading its own files.</p>
+<h2>Data stored locally</h2>
+<p>The App uses your browser's localStorage only to remember:</p>
+<ul><li>your selected interface language;</li><li>the unlock state of the optional paid modes, where in-app purchases are available.</li></ul>
+<p>This data never leaves your device and is removed if you clear the App's storage or uninstall it.</p>
+<h2>In-app purchases</h2>
+<p>Where available, the App offers optional one-time purchases: MTT Pro (PKO and Mystery Bounty), Cash Game and Spin &amp; Go. Prices are shown in the App and charged in your local currency by the store you installed the App from. All payments are handled entirely by that store; we never see or store your payment details. For billing, refunds and cancellations, please refer to the terms of the store you purchased from (Microsoft Store or Google Play).</p>
+<p>In some distributions all modes are unlocked and no purchase is offered.</p>
+<h2>Children</h2>
+<p>The App is a statistical tool intended for adults (18+) and is not directed at children under 13. We do not knowingly collect information from children.</p>
+<h2>No gambling, no guarantees</h2>
+<p>The App does not offer real-money gambling and does not provide any way to play, wager or deposit. It only runs Monte Carlo simulations on figures you enter. Results are statistical estimates and are not a prediction or guarantee of future results.</p>
+<h2>Changes</h2>
+<p>Any update to this policy will be published on this page with a revised date.</p>
+<h2>Contact</h2>
+<p><a href="mailto:emreciccio@gmail.com">emreciccio@gmail.com</a></p>
+</section>
 
+<section id="it" lang="it">
+<h1>Informativa Privacy</h1>
+<p class="meta">Ultimo aggiornamento: 12 agosto 2026</p>
+<p>Poker Variance Simulator ("l'App") e' sviluppata e gestita da Francesco Rizzo ("noi", "nostro"). Questa informativa descrive come l'App tratta le informazioni degli utenti.</p>
 <h2>Dati raccolti</h2>
-<p>L'App non raccoglie, trasmette o memorizza alcun dato personale. Tutti i calcoli vengono eseguiti localmente sul dispositivo dell'utente. Non utilizziamo server backend, account utente, analytics, cookie o tracker di terze parti.</p>
-
+<p>Nessuno. L'App non raccoglie, trasmette o memorizza alcun dato personale. Tutti i calcoli vengono eseguiti localmente sul dispositivo. Non esistono server backend, account utente, analytics, cookie o tracker di terze parti. L'App non effettua richieste di rete oltre al caricamento dei propri file.</p>
 <h2>Dati memorizzati localmente</h2>
-<p>L'App utilizza localStorage del browser esclusivamente per salvare lo stato di acquisto dei piani premium:</p>
-<ul>
-<li>MTT Pro (PKO e Mystery Bounty)</li>
-<li>Cash Game</li>
-<li>Spin &amp; Go</li>
-</ul>
-<p>Questi dati restano sul dispositivo e non vengono mai trasmessi a server esterni.</p>
-
+<p>L'App usa il localStorage del browser solo per ricordare:</p>
+<ul><li>la lingua dell'interfaccia selezionata;</li><li>lo stato di sblocco delle modalita' a pagamento, dove gli acquisti in-app sono disponibili.</li></ul>
+<p>Questi dati non lasciano mai il dispositivo e vengono eliminati svuotando l'archiviazione dell'App o disinstallandola.</p>
 <h2>Acquisti in-app</h2>
-<p>L'App offre tre acquisti opzionali una tantum:</p>
-<ul>
-<li>MTT Pro: EUR 2,29</li>
-<li>Cash Game: EUR 1,29</li>
-<li>Spin &amp; Go: EUR 1,29</li>
-</ul>
-<p>Gli acquisti sono gestiti interamente dallo store di distribuzione (Microsoft Store o Google Play, a seconda della versione installata). Non abbiamo accesso ai dati di pagamento degli utenti. Per le politiche di pagamento e i rimborsi, fare riferimento ai Termini di Vendita del Microsoft Store.</p>
-
-<h2>Dati di bambini</h2>
-<p>L'App non e' diretta a minori di 13 anni e non raccoglie consapevolmente informazioni da bambini.</p>
-
-<h2>Modifiche alla policy</h2>
-<p>Eventuali aggiornamenti a questa policy saranno pubblicati in questa pagina con la data di aggiornamento revisionata.</p>
-
+<p>Dove disponibili, l'App offre acquisti opzionali una tantum: MTT Pro (PKO e Mystery Bounty), Cash Game e Spin &amp; Go. I prezzi sono indicati nell'App e addebitati nella valuta locale dallo store da cui l'App e' stata installata. I pagamenti sono gestiti interamente da tale store; non abbiamo accesso ai dati di pagamento. Per fatturazione, rimborsi e cancellazioni fare riferimento ai termini dello store di acquisto (Microsoft Store o Google Play).</p>
+<p>In alcune distribuzioni tutte le modalita' sono sbloccate e non viene proposto alcun acquisto.</p>
+<h2>Minori</h2>
+<p>L'App e' uno strumento statistico destinato a un pubblico adulto (18+) e non e' diretta a minori di 13 anni. Non raccogliamo consapevolmente informazioni da bambini.</p>
+<h2>Nessun gioco d'azzardo, nessuna garanzia</h2>
+<p>L'App non offre gioco d'azzardo con denaro reale e non consente in alcun modo di giocare, scommettere o depositare. Esegue solo simulazioni Monte Carlo sui valori inseriti dall'utente. I risultati sono stime statistiche e non costituiscono una previsione o una garanzia di risultati futuri.</p>
+<h2>Modifiche</h2>
+<p>Eventuali aggiornamenti a questa informativa saranno pubblicati in questa pagina con la data revisionata.</p>
 <h2>Contatti</h2>
-<p>Per domande sulla privacy: emreciccio@gmail.com</p>
+<p><a href="mailto:emreciccio@gmail.com">emreciccio@gmail.com</a></p>
+</section>
+</div>
 </body>
 </html>
